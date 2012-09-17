@@ -23,7 +23,9 @@ Tune (external, 10200)  // will tune to 102.00 Mhz (FM4 Freinberg, Linz) using t
 
 One of the first changes to be made will be to move the default frequency to eeprom.
 
-To reflash the board with new firmware, apply power with the two pins alongside the AEC logo to enter usb bootloader mode.
+To reflash the board with new firmware, apply power via the usb connector,  with the two pins alongside the AEC logo shorted
+The board will enter usb bootloader mode, green led on solid and red led flashing.  You can then use the microchip HIDBootloader to reflash the chip.
+
 
 
 Regards
