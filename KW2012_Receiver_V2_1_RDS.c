@@ -1436,7 +1436,7 @@ void main(void) {
                 }
             }
         } else {
-            sample_length = 250u;  // usually 500
+            sample_length = 500u;  // usually 500
 
             // spectrum analyser for threshold verification
             /*
@@ -1458,16 +1458,13 @@ void main(void) {
                     red_led_timer = 3;
                 }
 
-                m1 = Goertzel(300); //crlf();  tx(' '); for (p=0;p<m1;p++) { tx('1'); }
-                m2 = Goertzel(400); //crlf();  tx(' '); for (p=0;p<m2;p++) { tx('2'); }
-                m3 = Goertzel(500); //crlf();  tx(' '); for (p=0;p<m3;p++) { tx('3'); }
+                m1 = Goertzel(f1); //crlf();  tx(' '); for (p=0;p<m1;p++) { tx('1'); }
+                m2 = Goertzel(f2); //crlf();  tx(' '); for (p=0;p<m2;p++) { tx('2'); }
+                m3 = Goertzel(f3); //crlf();  tx(' '); for (p=0;p<m3;p++) { tx('3'); }
 
-                m4 = Goertzel(600); //crlf();  tx(' '); for (p=0;p<m1;p++) { tx('1'); }
-                m5 = Goertzel(800); //crlf();  tx(' '); for (p=0;p<m2;p++) { tx('2'); }
-                m6 = Goertzel(1000); //crlf();  tx(' '); for (p=0;p<m3;p++) { tx('3'); }
                 // if any of the three tones is above threshold turn on
 
-                if ((m1 > threshold_level) || (m2 > threshold_level) || (m3 > threshold_level) || (m4 > threshold_level) || (m5 > threshold_level) || (m6 > threshold_level) ) {
+                if ((m1 > threshold_level) || (m2 > threshold_level) || (m3 > threshold_level) ) {
                     if (pwm==0)  {
                         blank_pattern();
                         pwm_on(fade_in);
