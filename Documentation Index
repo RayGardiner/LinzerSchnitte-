@@ -1,0 +1,17 @@
+The documentation branch files.
+
+KW2012_2_1.JPG   is an image of the final version PCB that went to production,  you can follow some of the key circuit
+                 features, and locate key components.
+                 
+SiLabs_Programming Guide  this is a full programming guide for the Si4705 receiver chip.  
+
+Si4704           Brief description of Si4704/5 
+
+PIC18LF14K50     Full documentation on the processor chip used
+
+KW2012_Clocks.XLS  detailed spreadsheet showing how the various clocks are generated and the relationships
+
+KW2012_V2.1.zip  Full Gerber PCB files for the Linzer Schnitte, includes Altium files.
+
+KW2012V1.9BOM.xls  Full parts list, with part numbers and prices.
+
