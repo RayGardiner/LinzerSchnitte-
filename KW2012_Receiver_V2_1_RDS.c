@@ -248,6 +248,9 @@ static unsigned char red_led_timer;
 static unsigned char txchar;
 static unsigned char txtemp;
 
+// MP:
+static unsigned char state;
+
 
 /////////////////////////////////////////////////////////////////////
 
@@ -1278,7 +1281,7 @@ void main(void) {
 
     int SIGint;
     int SIGext;
-
+	
     long m1, m2, m3, m4, m5, m6;
 
     ANSEL = 0;
@@ -1460,22 +1463,47 @@ void main(void) {
 
                 m1 = Goertzel(f1); //crlf();  tx(' '); for (p=0;p<m1;p++) { tx('1'); }
                 m2 = Goertzel(f2); //crlf();  tx(' '); for (p=0;p<m2;p++) { tx('2'); }
-                m3 = Goertzel(f3); //crlf();  tx(' '); for (p=0;p<m3;p++) { tx('3'); }
+                
+				/* OLD
+				//m3 = Goertzel(f3); //crlf();  tx(' '); for (p=0;p<m3;p++) { tx('3'); }
 
                 // if any of the three tones is above threshold turn on
-
+				
+					
                 if ((m1 > threshold_level) || (m2 > threshold_level) || (m3 > threshold_level) ) {
                     if (pwm==0)  {
                         blank_pattern();
                         pwm_on(fade_in);
                     }
-                }
+				}
                 // if ALL of the three tones are below threshold-hystersis turn off
-                if ((m1 < (threshold_level - hysteresis)) && (m2 < (threshold_level - hysteresis)) && (m3 < (threshold_level - hysteresis))) {
+				if ((m1 < (threshold_level - hysteresis)) && (m2 < (threshold_level - hysteresis)) && (m3 < (threshold_level - hysteresis))) {
                     blank_pattern();
                     pwm_off(fade_out);
                 }
-
+				*/
+				// MP: Toggle LED strip everytime the m1 sine wave is detected
+				if (m1 > threshold_level)
+				{
+					state ^= 0x01;	// XOR state with 0x01
+					if(state)
+					{
+						blank_pattern();
+						pwm_on(fade_in);
+					}
+					else
+					{
+						blank_pattern();
+						pwm_off(fade_out);
+					}
+				}
+				// Switch off when m2 sine wave is detected (sync)
+				else if (m2 > threshold_level)
+				{
+					state = 0x00;	// XOR state with 0x01
+					blank_pattern();
+					pwm_off(fade_out);
+				}
             }
 
         }
