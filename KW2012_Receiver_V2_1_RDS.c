@@ -1346,7 +1346,7 @@ void main(void) {
     Si4705_SET_RCLK();
     ms(100);
 
-    SIGext = Tune(external,10790u);
+    SIGext = Tune(external,09450u);
 
     //Si4705_SET_PROPERTY( 0x1107, 1);	// select internal antenna
     //tx('T'); Si4705_TUNE(9750u);
