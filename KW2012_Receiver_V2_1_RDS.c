@@ -58,7 +58,7 @@ rom unsigned char eedata_values[0x40] = {
     0x00, 0x32, // 0x0c threshold default = 100
     0x00, 0x19, // 0x0e hysteresis default = 25
 
-    0x01, 0x2C, // 0x10 tone 1 300  Vienna 2
+    0x03, 0x84, // 0x10 tone 1 300  Vienna 2
     0x01, 0xF4, // 0x12 tone 2 500
     0x02, 0x58, // 0x14 tone 3 600
 
@@ -857,7 +857,6 @@ void txhex(unsigned char c) {
     hi = (c >> 4)&0x0f;
     lo = c & 0x0f;
     tx(bin2ascii(hi));
-    `
     tx(bin2ascii(lo));
 }
 
@@ -1343,7 +1342,7 @@ void main(void) {
     Si4705_SET_RCLK();
     ms(100);
 
-    SIGext = Tune(external,10790u);
+    SIGext = Tune(external,9450u);
 
     //Si4705_SET_PROPERTY( 0x1107, 1);	// select internal antenna
     //tx('T'); Si4705_TUNE(9750u);
