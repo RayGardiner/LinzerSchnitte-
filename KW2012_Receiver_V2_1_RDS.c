@@ -1485,16 +1485,19 @@ void main(void) {
 				// MP: Toggle LED strip everytime the m1 sine wave is detected
 				if (m1 > threshold_level)
 				{
-					state ^= 0x01;	// XOR state with 0x01
-					if(state)
+					if (pwm==0)
 					{
-						blank_pattern();
-						pwm_on(fade_in);
-					}
-					else
-					{
-						blank_pattern();
-						pwm_off(fade_out);
+						state ^= 0x01;	// XOR state with 0x01
+						if(state)
+						{
+							blank_pattern();
+							pwm_on(fade_in);
+						}
+						else
+						{
+							blank_pattern();
+							pwm_off(fade_out);
+						}
 					}
 				}
 				// Switch off when m2 sine wave is detected (sync)
