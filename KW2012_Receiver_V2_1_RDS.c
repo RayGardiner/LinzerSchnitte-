@@ -1495,14 +1495,14 @@ void main(void) {
                                                     state = 0x01;
                                                     toggleComplete=0;
                                                     blank_pattern();
-                                                    pwm_on(fade_in);
+                                                    pwm_on(80);
 						}
 						else
 						{
                                                     state = 0x00;
                                                     toggleComplete=0;
                                                     blank_pattern();
-                                                    pwm_off(fade_out);
+                                                    pwm_off(80);
 						}
 					}
 
