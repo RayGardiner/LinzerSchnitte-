@@ -250,6 +250,7 @@ static unsigned char txtemp;
 
 // MP:
 static unsigned char state;
+static unsigned char toggleComplete;
 
 
 /////////////////////////////////////////////////////////////////////
@@ -1390,6 +1391,7 @@ void main(void) {
     ms(2000);
     crlf();
 
+    toggleComplete = 1;
 
     while (1) {
         ctr++;
@@ -1485,23 +1487,33 @@ void main(void) {
 				// MP: Toggle LED strip everytime the m1 sine wave is detected
 				if (m1 > threshold_level)
 				{
-					if (pwm==0)
+					if (toggleComplete)
 					{
-						state ^= 0x01;	// XOR state with 0x01
-						if(state)
+//						state ^= 0x01;	// XOR state with 0x01
+						if(state == 0x00 && pwm==0)
 						{
-							blank_pattern();
-							pwm_on(fade_in);
+                                                    state = 0x01;
+                                                    toggleComplete=0;
+                                                    blank_pattern();
+                                                    pwm_on(fade_in);
 						}
 						else
 						{
-							blank_pattern();
-							pwm_off(fade_out);
+                                                    state = 0x00;
+                                                    toggleComplete=0;
+                                                    blank_pattern();
+                                                    pwm_off(fade_out);
 						}
 					}
+
 				}
+                                else
+                                {
+                                    toggleComplete = 1;
+                                }
+
 				// Switch off when m2 sine wave is detected (sync)
-				else if (m2 > threshold_level)
+				if (m2 > threshold_level)
 				{
 					state = 0x00;	// XOR state with 0x01
 					blank_pattern();
