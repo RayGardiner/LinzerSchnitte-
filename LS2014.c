@@ -47,7 +47,7 @@ rom unsigned char eedata_values[0x40] = {
     // enter bootloader mode,  if it's 0xa5 then run application code
     //
     0xa5,       // 0x00
-    0x03, 0x01, // 0x01 Code version Major:Minor
+    0x03, 0x02, // 0x01 Code version Major:Minor
     0x06,       // 0x03 Startup Mode
                 // 01 == blink pattern
                 // 02 == breath pattern 
@@ -343,6 +343,8 @@ void InterruptHandlerHigh(void) {
 #pragma code
 
 void pwm_manager(void) {
+
+    if ((output_mode==toggle)||(output_mode==on_off)) { return; }
 
     if (ramp_up) {
         pattern_complete = 0; // used to trigger reload of values
@@ -949,17 +951,16 @@ void txdec8_2(int x) {
 }
 void print_frequency ( int f )
 {
-    unsigned char fh,fl;
-    fh=f/100;
-    fl=f-fh*100;
+    // deleted to make space for noise reject filtering..
+    //
+    //unsigned char fh,fl;
+    //fh=f/100;
+    //fl=f-fh*100;
 
-    txdec8(fh); 
-    tx('.');
-    txdec8_2(fl);
-    //tx(' ');
-    //tx('M');
-    //tx('h');
-    //tx('z');
+    //txdec8(fh);
+    //tx('.');
+    //txdec8_2(fl);
+
 
 }
 
@@ -988,9 +989,6 @@ int check_red_button(void) {
         Si4705_SEEK();
         //s=Si4705_TUNE_STATUS();
         // wait for release
-
-
-
 
         while ((PORTC & 0b00000100) == 0) {
             continue;
@@ -1037,6 +1035,7 @@ void pwm_off(int n) {
 
 unsigned char invert;
 unsigned char armed;
+unsigned char noise_reject;
 
 void activate_output ( unsigned char m )
 {
@@ -1046,7 +1045,7 @@ void activate_output ( unsigned char m )
     {
         case on_off:
                 // turn on..  ramps disabled in pwm_manager
-                pwm_on(1); break;
+                pwm=255; break;
         case pwm_ramps:
                 // normal fade-in fade out mode
                 if (pwm==0)  {
@@ -1057,10 +1056,17 @@ void activate_output ( unsigned char m )
         case rgb:
                 // reserved for rgb output mode
                 break;
+
         case toggle:
-                if (invert) { pwm_off(1); } else { pwm_on(1); }
+            noise_reject--;
+            if (noise_reject<=0) {
+                if (invert) { pwm=0; } else { pwm=255; }
                 armed=1;
-                break;
+                noise_reject=5;
+            }
+            break;
+
+
         case pwm_mag:
                 // pwm value depends on goertzel magnitude above threshold
                 // m is 0-200,  so scale
@@ -1093,6 +1099,7 @@ void de_activate_output ( void)
                     invert=!invert;
                     armed=0;
                 }
+                noise_reject=5;
                 break;
         case pwm_mag:
                 pwm_off(1); break;
@@ -1543,7 +1550,7 @@ void main(void) {
         bm[i] = ee_read8(bitmap+i);
     }
 
-    output_mode = ee_read8(output_mode_address);
+
     start_mode = ee_read8(start_mode_address);
     serial_mode = ee_read8(serial_mode_address);
     save_station= ee_read8(save_station_address);
@@ -1564,9 +1571,13 @@ void main(void) {
     refresh_addresses();
     next = SERIAL + 5631; // seed random generator
 
-    pwm = 255;            // turn on output for 1 second to test
-    auto_off = 1000;
-    ms(2000);
+    output_mode = on_off;
+    pwm=255;
+    ms(1000);
+    pwm=0;
+    
+    noise_reject=5;
+    output_mode = ee_read8(output_mode_address);
 
     crlf();
 
