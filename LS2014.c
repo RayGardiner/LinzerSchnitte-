@@ -1097,9 +1097,7 @@ void de_activate_output ( void)
                     invert=!invert;
                     armed=0;
                 }
-                else {
-                    noise_reject=5;
-                }
+                noise_reject=5;
                 break;
         case pwm_mag:
                 pwm_off(1); break;
