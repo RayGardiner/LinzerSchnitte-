@@ -1403,7 +1403,7 @@ void goertzel_tone_decoder ( void )
     if (ctr % 3 == 0) { red_led_timer = 3; }
 
     m1=Goertzel(f1);
-    m2=Goertzel(f1);
+    m2=Goertzel(f2);
     m3=Goertzel(f3);
     m4=Goertzel(f4);
     m5=Goertzel(f5);
