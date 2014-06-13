@@ -47,7 +47,7 @@ rom unsigned char eedata_values[0x40] = {
     // enter bootloader mode,  if it's 0xa5 then run application code
     //
     0xa5,       // 0x00
-    0x03, 0x01, // 0x01 Code version Major:Minor
+    0x03, 0x02, // 0x01 Code version Major:Minor
     0x06,       // 0x03 Startup Mode
                 // 01 == blink pattern
                 // 02 == breath pattern 
@@ -949,17 +949,16 @@ void txdec8_2(int x) {
 }
 void print_frequency ( int f )
 {
-    unsigned char fh,fl;
-    fh=f/100;
-    fl=f-fh*100;
+    // deleted to make space for noise reject filtering..
+    //
+    //unsigned char fh,fl;
+    //fh=f/100;
+    //fl=f-fh*100;
 
-    txdec8(fh); 
-    tx('.');
-    txdec8_2(fl);
-    //tx(' ');
-    //tx('M');
-    //tx('h');
-    //tx('z');
+    //txdec8(fh);
+    //tx('.');
+    //txdec8_2(fl);
+
 
 }
 
@@ -988,9 +987,6 @@ int check_red_button(void) {
         Si4705_SEEK();
         //s=Si4705_TUNE_STATUS();
         // wait for release
-
-
-
 
         while ((PORTC & 0b00000100) == 0) {
             continue;
@@ -1037,6 +1033,7 @@ void pwm_off(int n) {
 
 unsigned char invert;
 unsigned char armed;
+unsigned char noise_reject;
 
 void activate_output ( unsigned char m )
 {
@@ -1057,10 +1054,17 @@ void activate_output ( unsigned char m )
         case rgb:
                 // reserved for rgb output mode
                 break;
+
         case toggle:
+            noise_reject--;
+            if (noise_reject<=0) {
                 if (invert) { pwm_off(1); } else { pwm_on(1); }
                 armed=1;
-                break;
+                noise_reject=5;
+            }
+            break;
+
+
         case pwm_mag:
                 // pwm value depends on goertzel magnitude above threshold
                 // m is 0-200,  so scale
@@ -1092,6 +1096,9 @@ void de_activate_output ( void)
                 if (armed) {
                     invert=!invert;
                     armed=0;
+                }
+                else {
+                    noise_reject=5;
                 }
                 break;
         case pwm_mag:
@@ -1567,7 +1574,7 @@ void main(void) {
     pwm = 255;            // turn on output for 1 second to test
     auto_off = 1000;
     ms(2000);
-
+    noise_reject=5;
     crlf();
 
     threshold_off=threshold_level-hysteresis;
