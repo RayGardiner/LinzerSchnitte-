@@ -344,6 +344,8 @@ void InterruptHandlerHigh(void) {
 
 void pwm_manager(void) {
 
+    if ((output_mode==toggle)||(output_mode==on_off)) { return; }
+
     if (ramp_up) {
         pattern_complete = 0; // used to trigger reload of values
 
@@ -1043,7 +1045,7 @@ void activate_output ( unsigned char m )
     {
         case on_off:
                 // turn on..  ramps disabled in pwm_manager
-                pwm_on(1); break;
+                pwm=255; break;
         case pwm_ramps:
                 // normal fade-in fade out mode
                 if (pwm==0)  {
@@ -1058,7 +1060,7 @@ void activate_output ( unsigned char m )
         case toggle:
             noise_reject--;
             if (noise_reject<=0) {
-                if (invert) { pwm_off(1); } else { pwm_on(1); }
+                if (invert) { pwm=0; } else { pwm=255; }
                 armed=1;
                 noise_reject=5;
             }
@@ -1548,7 +1550,7 @@ void main(void) {
         bm[i] = ee_read8(bitmap+i);
     }
 
-    output_mode = ee_read8(output_mode_address);
+
     start_mode = ee_read8(start_mode_address);
     serial_mode = ee_read8(serial_mode_address);
     save_station= ee_read8(save_station_address);
@@ -1569,10 +1571,14 @@ void main(void) {
     refresh_addresses();
     next = SERIAL + 5631; // seed random generator
 
-    pwm = 255;            // turn on output for 1 second to test
-    auto_off = 1000;
-    ms(2000);
+    output_mode = on_off;
+    pwm=255;
+    ms(1000);
+    pwm=0;
+    
     noise_reject=5;
+    output_mode = ee_read8(output_mode_address);
+
     crlf();
 
     threshold_off=threshold_level-hysteresis;
