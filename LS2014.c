@@ -345,7 +345,7 @@ void InterruptHandlerHigh(void) {
 
 void pwm_manager(void) {
 
-    if ((output_mode==toggle)||(output_mode==on_off)) { return; }
+    if (output_mode==toggle) { return; }
 
     if (ramp_up) {
         pattern_complete = 0; // used to trigger reload of values
