@@ -47,7 +47,7 @@ rom unsigned char eedata_values[0x40] = {
     // enter bootloader mode,  if it's 0xa5 then run application code
     //
     0xa5,       // 0x00
-    0x03, 0x02, // 0x01 Code version Major:Minor
+    0x03, 0x03, // 0x01 Code version Major:Minor
     0x06,       // 0x03 Startup Mode
                 // 01 == blink pattern
                 // 02 == breath pattern 
@@ -71,7 +71,7 @@ rom unsigned char eedata_values[0x40] = {
     // refer to custom usb programmer for automatic
     // serial number generation
     //
-    0x06, 0xA0, // 0x08 08 device serial number == unique address
+    0x00, 0x00, // 0x08 08 device serial number == unique address
     0x2a, 0x26, // 0x0a 10 default frequency 107.90 Mhz
     0x00, 0x64, // 0x0c 12 threshold default = 100
     0x00, 0x19, // 0x0e 14 hysteresis default = 25
@@ -81,9 +81,9 @@ rom unsigned char eedata_values[0x40] = {
     0x01, 0xF4, // 0x14 20 tone 3 500
 
 
-    0x02, 0x58, // 0x16 22 tone 4 600  // space for extra tones
-    0x02, 0xBC, // 0x18 24 tone 5 700
-    0x03, 0x20, // 0x1a 26 tone 6 800
+    0x00, 0x00, // 0x16 22 tone 4 0  // space for extra tones
+    0x00, 0x00, // 0x18 24 tone 5 0
+    0x00, 0x00, // 0x1a 26 tone 6 0
     
     0x01,       // 0x1c 28 ramp on time   100 == 1 second
     0x01,       // 0x1d 29 ramp off time
@@ -100,7 +100,7 @@ rom unsigned char eedata_values[0x40] = {
     0xff, 0xf3, // 0x2a 42 address G6 word group address
 
     0x00,       // 0x2c 44 antenna_type external
-    0x02,       // 0x2d 45 serial-debug mode
+    0x01,       // 0x2d 45 serial-debug mode
     0x00,       // 0x2e 46 save station default to no
     0xff,       // 0x2f 47
 
@@ -343,8 +343,6 @@ void InterruptHandlerHigh(void) {
 #pragma code
 
 void pwm_manager(void) {
-
-    if ((output_mode==toggle)||(output_mode==on_off)) { return; }
 
     if (ramp_up) {
         pattern_complete = 0; // used to trigger reload of values
@@ -953,13 +951,13 @@ void print_frequency ( int f )
 {
     // deleted to make space for noise reject filtering..
     //
-    //unsigned char fh,fl;
-    //fh=f/100;
-    //fl=f-fh*100;
+    unsigned char fh,fl;
+    fh=f/100;
+    fl=f-fh*100;
 
-    //txdec8(fh);
-    //tx('.');
-    //txdec8_2(fl);
+    txdec8(fh);
+    tx('.');
+    txdec8_2(fl);
 
 
 }
@@ -1041,17 +1039,18 @@ void activate_output ( unsigned char m )
 {
     int x;
 
+    blank_pattern();
+
     switch (output_mode)
     {
         case on_off:
                 // turn on..  ramps disabled in pwm_manager
-                pwm=255; break;
+                pwm_on(1); break;
         case pwm_ramps:
                 // normal fade-in fade out mode
-                if (pwm==0)  {
-                    blank_pattern();
+                //if (pwm==0)  {
                     pwm_on(fade_in);
-                }
+                //}
                 break;
         case rgb:
                 // reserved for rgb output mode
@@ -1059,10 +1058,11 @@ void activate_output ( unsigned char m )
 
         case toggle:
             noise_reject--;
-            if (noise_reject<=0) {
-                if (invert) { pwm=0; } else { pwm=255; }
+            if ((noise_reject<=0)||(enable_goertzel==0)) {
+                // reject noise if doing goertzel
+                if (invert) { pwm_off(1); } else { pwm_on(1); }
                 armed=1;
-                noise_reject=5;
+                noise_reject=3;
             }
             break;
 
@@ -1081,6 +1081,9 @@ void activate_output ( unsigned char m )
 
 void de_activate_output ( void)
 {
+
+    blank_pattern();
+
     switch (output_mode)
     {
         case on_off:
@@ -1088,7 +1091,7 @@ void de_activate_output ( void)
                 pwm_off(1);  break;
         case pwm_ramps:
                 // normal fade-in fade out mode
-                blank_pattern();
+                //blank_pattern();
                 pwm_off(fade_out);
                 break;
         //case rgb:
@@ -1554,6 +1557,7 @@ void main(void) {
     start_mode = ee_read8(start_mode_address);
     serial_mode = ee_read8(serial_mode_address);
     save_station= ee_read8(save_station_address);
+    output_mode = ee_read8(output_mode_address);
 
     //crlf();  txhex(output_mode); txhex(start_mode); txhex(serial_mode);
 
@@ -1571,13 +1575,10 @@ void main(void) {
     refresh_addresses();
     next = SERIAL + 5631; // seed random generator
 
-    output_mode = on_off;
     pwm=255;
-    ms(1000);
-    pwm=0;
-    
-    noise_reject=5;
-    output_mode = ee_read8(output_mode_address);
+    auto_off=1000;
+    ms(2000);
+   
 
     crlf();
 
