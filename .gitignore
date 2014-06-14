@@ -1,0 +1,5 @@
+#ignore build and distribution directories
+
+build
+dist
+
