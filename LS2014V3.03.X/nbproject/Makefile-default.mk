@@ -61,8 +61,20 @@ LDLIBSOPTIONS=
 # fixDeps replaces a bunch of sed/cat/printf statements that slow down the build
 FIXDEPS=fixDeps
 
+# The following macros may be used in the pre and post step lines
+Device=PIC18LF14K50
+ProjectDir=/home/ray/Desktop/Projects/LS_Rx/LinzerSchnitte-/LS2014V3.03.X
+ConfName=default
+ImagePath=dist/default/${IMAGE_TYPE}/LS2014V3.03.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+ImageDir=dist/default/${IMAGE_TYPE}
+ImageName=LS2014V3.03.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+
 .build-conf:  ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/LS2014V3.03.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+	@echo "--------------------------------------"
+	@echo "User defined post-build step: [cp dist/default/production/LS2014V3.03.X.production.hex  ../"Firmware Files"/LS2014V3.03.hex]"
+	@cp dist/default/production/LS2014V3.03.X.production.hex  ../"Firmware Files"/LS2014V3.03.hex
+	@echo "--------------------------------------"
 
 MP_PROCESSOR_OPTION=18LF14K50
 MP_PROCESSOR_OPTION_LD=18lf14k50
