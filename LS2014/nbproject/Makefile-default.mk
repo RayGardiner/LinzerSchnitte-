@@ -72,10 +72,9 @@ ImageName=LS2014V3.03.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 .build-conf:  ${BUILD_SUBPROJECTS}
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/LS2014V3.03.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 	@echo "--------------------------------------"
-	@echo "User defined post-build step: [cp dist/default/production/LS2014V3.03.X.production.hex  ../"Firmware Files"/LS2014V3.03.hex]"
-	@cp dist/default/production/LS2014V3.03.X.production.hex  ../"Firmware Files"/LS2014V3.03.hex
+	@echo "User defined post-build step: [cp dist/default/production/LS2014.production.hex  ../"Firmware Files"/LS2014V3.04.hex]"
+	@cp dist/default/production/LS2014.production.hex  ../"Firmware Files"/LS2014V3.04.hex
 	@echo "--------------------------------------"
-
 MP_PROCESSOR_OPTION=18LF14K50
 MP_PROCESSOR_OPTION_LD=18lf14k50
 MP_LINKER_DEBUG_OPTION= -u_DEBUGCODESTART=0x3e00 -u_DEBUGCODELEN=0x200
