@@ -1109,8 +1109,116 @@ void de_activate_output ( void)
     }
 }
 
+/*
+void printdecimal16 (  int x )
+{
+	unsigned char sign;
+	unsigned char leading_zero_blanking;
+	unsigned char right_justify;
+	unsigned char j;
+	unsigned char d[5]; for (j=0;j<5;j++) { d[j]=0; }
 
-#define pi 3.1415926
+	if (x==0) {  tx('0'); return; }
+
+	if (x<0) { sign='-'; x = -1*x; } else { sign=' '; }
+
+	// x + ve
+	while (x>=0) {  x = x-10000u;      d[0]++; } x=x+10000u; d[0]--;
+	while (x>=0) {  x = x-1000u;       d[1]++; } x=x+1000u; d[1]--;
+	while (x>=0) {  x = x-100u;        d[2]++; } x=x+100u; d[2]--;
+	while (x>=0) {  x = x-10u;         d[3]++; } x=x+10u; d[3]--;
+	while (x>=0) {  x = x-1u;          d[4]++; } x=x+1u; d[4]--;
+
+	right_justify=1;
+	leading_zero_blanking=0;
+	tx(sign);
+
+	for (j=0;j<5;j++) {
+		d[j]=bin2ascii(d[j]);  // convert to ascii
+                tx(d[j]);
+
+		if (leading_zero_blanking) {
+		     if (d[j]==0x30) { d[j]=0x20; } else { leading_zero_blanking=0; }
+		}
+		if (right_justify==0) {
+		 	if(d[j]!=0x20) { tx(d[j]); } // only print if non-space
+		}
+		else {
+			tx(d[j]);  // print leading spaces
+		}
+	}
+}
+*/
+
+#define pi  3.1415926
+
+float cos ( float x)
+{
+//  Standard Taylor Series expansion for cosine
+//
+    int i;
+    float y;
+    long n;
+    float res = 1.0;
+
+    y = x*x;           // y=x^2
+    n = 1*2;
+    res = res - y/n;   // -x^2/2!
+
+    y = y*x*x;         // y=x^4
+    n = n*3*4;
+    res = res + y/n;   // +x^4/4!
+
+    y = y*x*x;         // y=x^6
+    n = n*5*6;
+    res = res - y/n;   // -x^6/6!
+
+    y = y*x*x;         // y=x^8
+    n = n*7*8;
+    res = res + y/n;   // +x^8/8!
+
+
+   //y = y*x*x;         // y=x^10
+   //n = n*9*10;
+   //res = res - y/n;   // -x^10/10!
+
+   //y = y*x*x;         // y=x^12
+   //n = n*11*12;
+   //res = res + y/n;   // +x^12/12!
+
+
+    return res;
+}
+
+ /*
+float cos (float x)
+{
+    // parabolic approximation to cosine..
+    // not quite as accurate as Taylor Series, but smaller and faster
+    //
+    float y;
+    x += 1.57079632;
+    y = 1.27323954 * x - 0.405284735 * x * x;
+    y = .2240075 * (y * y - y) + y; // Optional for higher precision
+    return y;
+}
+
+
+void calculation_check ( void ) 
+{
+    int i, f;
+    float coeff;
+    for (i=300;i<9400;i=i+100)
+    {
+        crlf();
+        printdecimal16(i);
+        tx('=');
+        coeff=2*cos(tau*(float)(i)/37500);
+        cf = (unsigned int)(coeff*32768);
+        printdecimal16(cf);
+    }
+}
+*/
 
 unsigned char Goertzel ( int f ) 
 {
@@ -1584,6 +1692,8 @@ void main(void) {
 
     threshold_off=threshold_level-hysteresis;
 
+    ///calculation_check();  // check goertzel coefficients
+    
     while (1) {
 
         if (pattern)  pattern_handler();
