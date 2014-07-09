@@ -1235,10 +1235,10 @@ void check_bm ( unsigned char row )
         // there are some non-zero bits in this row..
         enable_goertzel = 0;
 
-        if ((C[0] && bm[row*4+0])!=0)  { out_flag=1; }
-        if ((C[1] && bm[row*4+1])!=0)  { out_flag=1; }
-        if ((D[0] && bm[row*4+2])!=0)  { out_flag=1; }
-        if ((D[1] && bm[row*4+3])!=0)  { out_flag=1; }
+        if ((C[0] & bm[row*4+0])!=0)  { out_flag=1; }
+        if ((C[1] & bm[row*4+1])!=0)  { out_flag=1; }
+        if ((D[0] & bm[row*4+2])!=0)  { out_flag=1; }
+        if ((D[1] & bm[row*4+3])!=0)  { out_flag=1; }
 
         if (out_flag) {
             activate_output(255);
