@@ -48,7 +48,7 @@ rom unsigned char eedata_values[0x40] = {
     // enter bootloader mode,  if it's 0xa5 then run application code
     //
     0xa5,       // 0x00
-    0x03, 0x03, // 0x01 Code version Major:Minor
+    0x03, 0x04, // 0x01 Code version Major:Minor
     0x06,       // 0x03 Startup Mode
                 // 01 == blink pattern
                 // 02 == breath pattern 
